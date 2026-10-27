@@ -1,7 +1,9 @@
+import { UploadDropzone } from "@/components/UploadDropzone";
+
 export default function Home() {
   return (
-    <main className="flex flex-1 items-center justify-center px-6 py-20">
-      <div className="w-full max-w-xl">
+    <main className="flex flex-1 items-center justify-center px-6 py-16">
+      <div className="w-full max-w-2xl">
         <p className="mb-4 text-xs font-medium uppercase tracking-widest text-muted-foreground">
           Open source · MIT
         </p>
@@ -13,18 +15,10 @@ export default function Home() {
           settle-up plan.
         </p>
 
-        <div className="mt-10 rounded-xl border bg-card p-5 text-sm text-muted-foreground">
-          <p>
-            Upload a chat export, review the expenses we find, and see who owes
-            whom — with the fewest transfers.
-          </p>
-          <p className="mt-3">
-            Your chat never leaves this session. We don&apos;t store anything.
-          </p>
-        </div>
+        <UploadDropzone />
 
         <p className="mt-8 text-xs text-muted-foreground">
-          Built with Next.js and open models.
+          Your chat never leaves this session. We don&apos;t store anything.
         </p>
       </div>
     </main>
