@@ -1,0 +1,250 @@
+{
+  "expenses": [
+    {
+      "id": "sample-1",
+      "payer": "Rahul",
+      "amountPaise": 960000,
+      "description": "Hotel (2 nights)",
+      "category": "stay",
+      "splitAmong": [
+        "Rahul",
+        "Priya",
+        "Aman",
+        "Sneha",
+        "Karan"
+      ],
+      "sourceMessageIds": [
+        11
+      ],
+      "confidence": "high"
+    },
+    {
+      "id": "sample-2",
+      "payer": "Priya",
+      "amountPaise": 60000,
+      "description": "Cab from airport to Baga",
+      "category": "travel",
+      "splitAmong": [
+        "Rahul",
+        "Priya",
+        "Aman"
+      ],
+      "sourceMessageIds": [
+        23,
+        22
+      ],
+      "confidence": "high"
+    },
+    {
+      "id": "sample-3",
+      "payer": "Sneha",
+      "amountPaise": 80000,
+      "description": "Scooty rental (2 days)",
+      "category": "travel",
+      "splitAmong": [
+        "Sneha",
+        "Aman"
+      ],
+      "sourceMessageIds": [
+        35
+      ],
+      "confidence": "high"
+    },
+    {
+      "id": "sample-4",
+      "payer": "Rahul",
+      "amountPaise": 200000,
+      "description": "Petrol (Scooty + Car)",
+      "category": "travel",
+      "splitAmong": [
+        "Rahul",
+        "Priya",
+        "Aman",
+        "Sneha",
+        "Karan"
+      ],
+      "sourceMessageIds": [
+        39,
+        41
+      ],
+      "confidence": "medium"
+    },
+    {
+      "id": "sample-5",
+      "payer": "Karan",
+      "amountPaise": 145000,
+      "description": "Beach shack dinner",
+      "category": "food",
+      "splitAmong": [
+        "Rahul",
+        "Priya",
+        "Aman",
+        "Sneha",
+        "Karan"
+      ],
+      "sourceMessageIds": [
+        48
+      ],
+      "confidence": "high"
+    },
+    {
+      "id": "sample-6",
+      "payer": "Rahul",
+      "amountPaise": 45000,
+      "description": "Breakfast",
+      "category": "food",
+      "splitAmong": [
+        "Rahul",
+        "Priya",
+        "Aman",
+        "Sneha",
+        "Karan"
+      ],
+      "sourceMessageIds": [
+        56
+      ],
+      "confidence": "high"
+    },
+    {
+      "id": "sample-7",
+      "payer": "Priya",
+      "amountPaise": 120000,
+      "description": "Entry tickets (4 tickets)",
+      "category": "activities",
+      "splitAmong": [
+        "Priya",
+        "Aman",
+        "Karan",
+        "Rahul"
+      ],
+      "sourceMessageIds": [
+        59
+      ],
+      "confidence": "high"
+    },
+    {
+      "id": "sample-8",
+      "payer": "Rahul",
+      "amountPaise": 30000,
+      "description": "Sneha's entry ticket",
+      "category": "activities",
+      "splitAmong": [
+        "Sneha"
+      ],
+      "sourceMessageIds": [
+        61
+      ],
+      "confidence": "high"
+    },
+    {
+      "id": "sample-9",
+      "payer": "Sneha",
+      "amountPaise": 250000,
+      "description": "Parasailing",
+      "category": "activities",
+      "splitAmong": [
+        "Sneha",
+        "Aman",
+        "Karan",
+        "Rahul"
+      ],
+      "sourceMessageIds": [
+        65
+      ],
+      "confidence": "high"
+    },
+    {
+      "id": "sample-10",
+      "payer": "Sneha",
+      "amountPaise": 70000,
+      "description": "Water sports photos",
+      "category": "activities",
+      "splitAmong": [
+        "Rahul",
+        "Priya",
+        "Aman",
+        "Sneha",
+        "Karan"
+      ],
+      "sourceMessageIds": [
+        72
+      ],
+      "confidence": "high"
+    },
+    {
+      "id": "sample-11",
+      "payer": "Aman",
+      "amountPaise": 150000,
+      "description": "Beer and snacks",
+      "category": "food",
+      "splitAmong": [
+        "Rahul",
+        "Priya",
+        "Aman",
+        "Sneha",
+        "Karan"
+      ],
+      "sourceMessageIds": [
+        76
+      ],
+      "confidence": "high"
+    },
+    {
+      "id": "sample-12",
+      "payer": "Aman",
+      "amountPaise": 50000,
+      "description": "Scooty fuel",
+      "category": "travel",
+      "splitAmong": [
+        "Rahul",
+        "Priya",
+        "Aman",
+        "Sneha",
+        "Karan"
+      ],
+      "sourceMessageIds": [
+        84
+      ],
+      "confidence": "high"
+    },
+    {
+      "id": "sample-13",
+      "payer": "Karan",
+      "amountPaise": 320000,
+      "description": "Dinner at Britto's",
+      "category": "food",
+      "splitAmong": [
+        "Rahul",
+        "Priya",
+        "Aman",
+        "Sneha",
+        "Karan"
+      ],
+      "sourceMessageIds": [
+        90
+      ],
+      "confidence": "high"
+    },
+    {
+      "id": "sample-14",
+      "payer": "Priya",
+      "amountPaise": 65000,
+      "description": "airport cab",
+      "category": "travel",
+      "splitAmong": [
+        "Rahul",
+        "Priya",
+        "Aman",
+        "Sneha",
+        "Karan"
+      ],
+      "sourceMessageIds": [
+        117,
+        120,
+        126
+      ],
+      "confidence": "high"
+    }
+  ],
+  "summary": null
+}

@@ -1,0 +1,72 @@
+[
+  {
+    "payer": "Rahul",
+    "amountPaise": 960000,
+    "description": "Hotel (2 nights)"
+  },
+  {
+    "payer": "Priya",
+    "amountPaise": 60000,
+    "description": "Airport cab"
+  },
+  {
+    "payer": "Rahul",
+    "amountPaise": 200000,
+    "description": "Petrol"
+  },
+  {
+    "payer": "Sneha",
+    "amountPaise": 80000,
+    "description": "Scooty (shared with Aman)"
+  },
+  {
+    "payer": "Karan",
+    "amountPaise": 145000,
+    "description": "Beach shack dinner"
+  },
+  {
+    "payer": "Priya",
+    "amountPaise": 120000,
+    "description": "Water sports entry (4 people)"
+  },
+  {
+    "payer": "Rahul",
+    "amountPaise": 30000,
+    "description": "Sneha's entry"
+  },
+  {
+    "payer": "Sneha",
+    "amountPaise": 250000,
+    "description": "Parasailing"
+  },
+  {
+    "payer": "Sneha",
+    "amountPaise": 70000,
+    "description": "Water sports photos"
+  },
+  {
+    "payer": "Aman",
+    "amountPaise": 150000,
+    "description": "Beer and snacks"
+  },
+  {
+    "payer": "Aman",
+    "amountPaise": 50000,
+    "description": "Fuel top up"
+  },
+  {
+    "payer": "Karan",
+    "amountPaise": 320000,
+    "description": "Dinner at Britto's"
+  },
+  {
+    "payer": "Rahul",
+    "amountPaise": 45000,
+    "description": "Breakfast"
+  },
+  {
+    "payer": "Priya",
+    "amountPaise": 65000,
+    "description": "Airport cab back (corrected)"
+  }
+]
