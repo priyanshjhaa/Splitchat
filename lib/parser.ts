@@ -22,7 +22,7 @@ const IOS_HEADER = new RegExp(String.raw`^\[${DATE_TIME}\]\s?(.*)$`, "i");
 
 // <Media omitted>, image/video/... omitted, deleted messages and literal "null".
 const SKIPPED_TEXT =
-  /^(?:<media omitted>|(?:image|video|audio|sticker|gif|document) omitted|this message was deleted|you deleted this message|null)$/i;
+  /^(?:<media omitted>|(?:image|video|audio|sticker|gif|document) omitted|this message was deleted\.?|you deleted this message\.?|null)$/i;
 
 function normalizeRaw(raw: string): string {
   return raw

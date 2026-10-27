@@ -39,6 +39,14 @@ describe("parseChat — Android", () => {
 });
 
 describe("parseChat — iOS", () => {
+  it("skips iOS deleted messages that end with a period", () => {
+    const { messages } = parseChat(
+      "\u200e[06/10/26, 7:45:30\u202fPM] Dev: Uber 380 split\r\n" +
+        "\u200e[06/10/26, 7:46:00\u202fPM] Meera: \u200eThis message was deleted.\r\n",
+    );
+    expect(messages.map((message) => message.text)).toEqual(["Uber 380 split"]);
+  });
+
   const { messages, senders } = parseChat(fixture("ios.txt"));
 
   it("parses bracket timestamps with seconds", () => {
