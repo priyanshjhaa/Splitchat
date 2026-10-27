@@ -5,6 +5,7 @@ import JSZip from "jszip";
 import { ExpenseTable } from "@/components/ExpenseTable";
 import { ParticipantEditor } from "@/components/ParticipantEditor";
 import { SettleUpCard } from "@/components/SettleUpCard";
+import { FileText, Sparkles, Upload } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { chunkMessages } from "@/lib/chunk";
 import { mergeExpenses } from "@/lib/merge";
@@ -224,90 +225,142 @@ export function UploadDropzone() {
     if (file) void loadFile(file);
   }
 
-  return (
-    <section className="mt-10">
-      <div
-        onDragOver={(event) => {
-          event.preventDefault();
-          setDragging(true);
-        }}
-        onDragLeave={() => setDragging(false)}
-        onDrop={handleDrop}
-        className={`rounded-xl border-2 border-dashed p-8 text-center transition-colors ${
-          dragging ? "border-foreground bg-muted" : "border-border"
-        }`}
-      >
-        <p className="font-medium">Drop your WhatsApp export here</p>
-        <p className="mt-1 text-sm text-muted-foreground">
-          .txt or .zip (iOS exports are zips)
+  function startOver() {
+    setParsed(null);
+    setPeople([]);
+    setError(null);
+    resetExtraction();
+  }
+
+  const fileInput = (
+    <input
+      ref={inputRef}
+      type="file"
+      accept=".txt,.zip"
+      className="hidden"
+      onChange={(event) => {
+        const file = event.target.files?.[0];
+        if (file) void loadFile(file);
+        event.target.value = "";
+      }}
+    />
+  );
+
+  if (!parsed) {
+    return (
+      <section className="mx-auto max-w-2xl pt-4 text-center sm:pt-10">
+        <span className="inline-flex items-center gap-1.5 rounded-full border bg-card px-3 py-1 text-xs text-muted-foreground">
+          <Sparkles className="size-3.5 text-primary" />
+          Open source · runs on open models
+        </span>
+        <h1 className="mt-5 text-4xl font-semibold tracking-tight text-balance sm:text-6xl">
+          Who owes whom?
+          <br />
+          <span className="text-primary">Ask the group chat.</span>
+        </h1>
+        <p className="mx-auto mt-4 max-w-lg text-base leading-7 text-muted-foreground sm:text-lg">
+          Drop in your WhatsApp trip chat. SplitChat finds every expense, lets
+          you fix anything, and tells everyone exactly who pays whom.
         </p>
 
-        <input
-          ref={inputRef}
-          type="file"
-          accept=".txt,.zip"
-          className="hidden"
-          onChange={(event) => {
-            const file = event.target.files?.[0];
-            if (file) void loadFile(file);
-            event.target.value = "";
+        <div
+          onDragOver={(event) => {
+            event.preventDefault();
+            setDragging(true);
           }}
-        />
-
-        <div className="mt-4 flex flex-wrap justify-center gap-2">
-          <Button
-            onClick={() => inputRef.current?.click()}
-            disabled={loading}
-            size="lg"
-          >
-            {loading ? "Reading…" : "Choose file"}
-          </Button>
-          <Button variant="outline" size="lg" onClick={loadSample} disabled={loading}>
-            Try sample chat
-          </Button>
-        </div>
-      </div>
-
-      {error && (
-        <p role="alert" className="mt-3 text-sm text-destructive">
-          {error}
-        </p>
-      )}
-
-      {parsed && (
-        <div className="mt-6 rounded-xl border bg-card p-5">
-          <p className="font-medium">
-            {parsed.messages.length} messages from {parsed.senders.length} people
+          onDragLeave={() => setDragging(false)}
+          onDrop={handleDrop}
+          className={`mt-10 rounded-2xl border-2 border-dashed bg-card p-8 shadow-sm transition-colors sm:p-10 ${
+            dragging ? "border-primary bg-primary/5" : "border-border"
+          }`}
+        >
+          <span className="mx-auto flex size-12 items-center justify-center rounded-full bg-primary/10 text-primary">
+            <Upload className="size-5" />
+          </span>
+          <p className="mt-4 font-medium">Drop your WhatsApp export here</p>
+          <p className="mt-1 text-sm text-muted-foreground">
+            .txt from Android, or .zip from iPhone
           </p>
-          <p className="text-sm text-muted-foreground">{parsed.fileName}</p>
-          <ParticipantEditor
-            people={people}
-            canRemove={(person) => canRemovePerson(expenses ?? [], person)}
-            onRename={handleRename}
-            onAdd={(name) => setPeople([...people, name])}
-            onRemove={handleRemove}
-          />
-
-          {sampleLoaded ? (
-            <p className="mt-4 text-sm text-muted-foreground">
-              Saved sample result loaded — no API calls.
+          {fileInput}
+          <div className="mt-6 flex flex-wrap justify-center gap-2">
+            <Button
+              size="lg"
+              onClick={() => inputRef.current?.click()}
+              disabled={loading}
+            >
+              {loading ? "Reading…" : "Choose file"}
+            </Button>
+            <Button variant="outline" size="lg" onClick={loadSample} disabled={loading}>
+              Try sample chat
+            </Button>
+          </div>
+          {error && (
+            <p role="alert" className="mt-4 text-sm text-destructive">
+              {error}
             </p>
-          ) : (
-            <div className="mt-4 flex flex-wrap items-center gap-3">
-              <Button onClick={findExpenses} disabled={extracting} size="lg">
-                {extracting ? "Reading chat…" : "Find expenses"}
-              </Button>
-              {progress && (
-                <span className="text-sm text-muted-foreground">{progress}</span>
-              )}
-            </div>
           )}
         </div>
-      )}
+
+        <details className="mx-auto mt-4 max-w-md text-left text-sm text-muted-foreground">
+          <summary className="cursor-pointer text-center hover:text-foreground">
+            How do I export a WhatsApp chat?
+          </summary>
+          <ol className="mt-3 list-decimal space-y-1 pl-5">
+            <li>Open the group chat and tap the group name.</li>
+            <li>
+              Tap <b>Export chat</b> (Android: ⋮ → More → Export chat).
+            </li>
+            <li>
+              Choose <b>Without media</b> and save the file.
+            </li>
+          </ol>
+        </details>
+
+        <ol className="mt-12 grid gap-4 text-left sm:grid-cols-3">
+          {[
+            ["1", "Drop the chat", "Parsed on your device. Nothing is stored."],
+            ["2", "Check the expenses", "AI finds them. You fix anything it missed."],
+            ["3", "Settle up", "Fewest payments, ready to paste in the group."],
+          ].map(([step, title, text]) => (
+            <li key={step} className="rounded-xl border bg-card p-4">
+              <span className="text-xs font-semibold text-primary">Step {step}</span>
+              <p className="mt-1 font-medium">{title}</p>
+              <p className="mt-1 text-sm text-muted-foreground">{text}</p>
+            </li>
+          ))}
+        </ol>
+      </section>
+    );
+  }
+
+  return (
+    <section>
+      <div className="flex flex-wrap items-center gap-3 rounded-2xl border bg-card p-4 shadow-sm">
+        <span className="flex size-10 items-center justify-center rounded-xl bg-primary/10 text-primary">
+          <FileText className="size-5" />
+        </span>
+        <div className="min-w-0 flex-1">
+          <p className="truncate font-medium">{parsed.fileName}</p>
+          <p className="text-sm text-muted-foreground">
+            {parsed.messages.length} messages · {people.length} people
+            {sampleLoaded && " · saved sample, no API calls"}
+          </p>
+        </div>
+        {fileInput}
+        {!sampleLoaded && (
+          <Button onClick={findExpenses} disabled={extracting}>
+            <Sparkles />
+            {extracting ? progress ?? "Reading chat…" : expenses ? "Find again" : "Find expenses"}
+          </Button>
+        )}
+        <Button variant="outline" onClick={startOver} disabled={extracting}>
+          New chat
+        </Button>
+      </div>
 
       {extractError && (
-        <div className="mt-3 flex flex-wrap items-center gap-3">
-          <p role="alert" className="text-sm text-destructive">
+        <div className="mt-3 flex flex-wrap items-center gap-3 rounded-xl border border-destructive/30 bg-destructive/5 px-4 py-3">
+          <p role="alert" className="flex-1 text-sm text-destructive">
             {extractError}
           </p>
           {failedChunks.length > 0 && (
@@ -318,17 +371,43 @@ export function UploadDropzone() {
         </div>
       )}
 
-      {expenses && parsed && (
-        <>
-          <ExpenseTable
-            expenses={expenses}
+      <div className="mt-6 grid grid-cols-[minmax(0,1fr)] items-start gap-6 lg:grid-cols-[minmax(0,1fr)_360px]">
+        <div className="space-y-6">
+          <ParticipantEditor
             people={people}
-            messages={parsed.messages}
-            onChange={setExpenses}
+            canRemove={(person) => canRemovePerson(expenses ?? [], person)}
+            onRename={handleRename}
+            onAdd={(name) => setPeople([...people, name])}
+            onRemove={handleRemove}
           />
-          <SettleUpCard expenses={expenses} people={people} />
-        </>
-      )}
+
+          {expenses ? (
+            <ExpenseTable
+              expenses={expenses}
+              people={people}
+              messages={parsed.messages}
+              onChange={setExpenses}
+            />
+          ) : (
+            <div className="rounded-2xl border border-dashed bg-card p-8 text-center">
+              <p className="font-medium">
+                {extracting ? progress ?? "Reading chat…" : "Ready when you are"}
+              </p>
+              <p className="mt-1 text-sm text-muted-foreground">
+                {extracting
+                  ? "The AI is reading the messages that mention money."
+                  : "Fix any names above, then press Find expenses."}
+              </p>
+            </div>
+          )}
+        </div>
+
+        {expenses && (
+          <div className="order-first lg:sticky lg:top-20 lg:order-none">
+            <SettleUpCard expenses={expenses} people={people} />
+          </div>
+        )}
+      </div>
     </section>
   );
 }

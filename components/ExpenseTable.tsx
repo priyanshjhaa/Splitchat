@@ -1,18 +1,14 @@
 "use client";
 
 import { useState } from "react";
+import { ChevronDown, Plus, Trash2 } from "lucide-react";
+import { Avatar } from "@/components/Avatar";
+import { CATEGORY_STYLE, CategoryTile } from "@/components/category";
 import { Button } from "@/components/ui/button";
 import { formatPaise, toPaise } from "@/lib/money";
 import type { Category, Expense, Message } from "@/lib/types";
 
-const CATEGORIES: Category[] = [
-  "food",
-  "travel",
-  "stay",
-  "activities",
-  "shopping",
-  "other",
-];
+const CATEGORIES = Object.keys(CATEGORY_STYLE) as Category[];
 
 type Props = {
   expenses: Expense[];
@@ -22,10 +18,18 @@ type Props = {
 };
 
 const field =
-  "h-8 rounded-lg border bg-background px-2 text-sm outline-none focus:ring-2 focus:ring-ring/50";
+  "h-9 w-full rounded-lg border bg-background px-3 text-sm outline-none focus:border-primary focus:ring-3 focus:ring-primary/20";
+
+function splitLabel(expense: Expense, people: string[]): string {
+  const count = expense.splitAmong.length;
+  if (count === 0) return "not split yet";
+  if (count === people.length) return `split ${count} ways`;
+  if (count === 1) return `for ${expense.splitAmong[0]}`;
+  return `split with ${expense.splitAmong.join(", ")}`;
+}
 
 export function ExpenseTable({ expenses, people, messages, onChange }: Props) {
-  const [openSource, setOpenSource] = useState<string | null>(null);
+  const [openId, setOpenId] = useState<string | null>(null);
 
   function update(id: string, patch: Partial<Expense>) {
     onChange(
@@ -45,10 +49,11 @@ export function ExpenseTable({ expenses, people, messages, onChange }: Props) {
   }
 
   function addExpense() {
+    const id = crypto.randomUUID();
     onChange([
       ...expenses,
       {
-        id: crypto.randomUUID(),
+        id,
         payer: people[0] ?? "",
         amountPaise: 0,
         description: "",
@@ -58,30 +63,46 @@ export function ExpenseTable({ expenses, people, messages, onChange }: Props) {
         confidence: "high",
       },
     ]);
+    setOpenId(id);
   }
 
   const total = expenses.reduce((sum, expense) => sum + expense.amountPaise, 0);
+  const unsure = expenses.filter((expense) => expense.confidence === "low").length;
 
   return (
-    <div className="mt-4 rounded-xl border bg-card p-5">
-      <div className="flex flex-wrap items-baseline justify-between gap-2">
-        <p className="font-medium">
-          {expenses.length} {expenses.length === 1 ? "expense" : "expenses"} ·{" "}
-          {formatPaise(total)}
-        </p>
-        <p className="text-xs text-muted-foreground">
-          Check each row. Fix anything the AI got wrong.
-        </p>
+    <div className="rounded-2xl border bg-card shadow-sm">
+      <div className="flex flex-wrap items-center justify-between gap-3 border-b px-5 py-4">
+        <div>
+          <h2 className="text-lg font-semibold">Expenses</h2>
+          <p className="text-sm text-muted-foreground">
+            {expenses.length} found · {formatPaise(total)} total
+            {unsure > 0 && (
+              <span className="text-amber-700 dark:text-amber-400">
+                {" "}
+                · {unsure} to double-check
+              </span>
+            )}
+          </p>
+        </div>
+        <Button variant="outline" onClick={addExpense}>
+          <Plus />
+          Add expense
+        </Button>
       </div>
 
-      {expenses.length === 0 && (
-        <p className="mt-2 text-sm text-muted-foreground">
+      {expenses.length === 0 ? (
+        <p className="px-5 py-10 text-center text-sm text-muted-foreground">
           No expenses found. Add them manually.
+        </p>
+      ) : (
+        <p className="border-b bg-muted/50 px-5 py-2 text-xs text-muted-foreground">
+          The AI found these. Tap any row to fix it.
         </p>
       )}
 
-      <ul className="mt-3 space-y-3">
+      <ul className="divide-y">
         {expenses.map((expense) => {
+          const open = openId === expense.id;
           const invalid =
             expense.amountPaise <= 0 || expense.splitAmong.length === 0;
           const sources = messages.filter((message) =>
@@ -89,150 +110,190 @@ export function ExpenseTable({ expenses, people, messages, onChange }: Props) {
           );
 
           return (
-            <li
-              key={expense.id}
-              className={`rounded-lg border p-3 ${
-                expense.confidence === "low"
-                  ? "border-amber-400 bg-amber-50 dark:bg-amber-950/30"
-                  : ""
-              }`}
-            >
-              <div className="grid grid-cols-2 gap-2 sm:grid-cols-[1fr_8rem_9rem_7rem_auto]">
-                <input
-                  value={expense.description}
-                  onChange={(event) =>
-                    update(expense.id, { description: event.target.value })
-                  }
-                  placeholder="What was it?"
-                  className={`${field} col-span-2 sm:col-span-1`}
-                  aria-label="Description"
+            <li key={expense.id} className={open ? "bg-muted/40" : ""}>
+              <button
+                type="button"
+                onClick={() => setOpenId(open ? null : expense.id)}
+                aria-expanded={open}
+                className="flex w-full items-center gap-3 px-5 py-3.5 text-left transition-colors hover:bg-muted/60"
+              >
+                <CategoryTile category={expense.category} />
+                <span className="min-w-0 flex-1">
+                  <span className="flex items-center gap-2">
+                    <span className="truncate font-medium">
+                      {expense.description || "Untitled expense"}
+                    </span>
+                    {expense.confidence === "low" && (
+                      <span className="shrink-0 rounded-full bg-amber-100 px-2 py-0.5 text-[11px] font-medium text-amber-800 dark:bg-amber-900/50 dark:text-amber-300">
+                        check
+                      </span>
+                    )}
+                    {invalid && (
+                      <span className="shrink-0 rounded-full bg-destructive/10 px-2 py-0.5 text-[11px] font-medium text-destructive">
+                        incomplete
+                      </span>
+                    )}
+                  </span>
+                  <span className="block truncate text-sm text-muted-foreground">
+                    {expense.payer} paid · {splitLabel(expense, people)}
+                  </span>
+                </span>
+                <span className="shrink-0 text-right font-semibold tabular-nums">
+                  {formatPaise(expense.amountPaise)}
+                </span>
+                <ChevronDown
+                  className={`size-4 shrink-0 text-muted-foreground transition-transform ${
+                    open ? "rotate-180" : ""
+                  }`}
                 />
-                <input
-                  type="number"
-                  min={0}
-                  inputMode="decimal"
-                  value={expense.amountPaise ? expense.amountPaise / 100 : ""}
-                  onChange={(event) =>
-                    update(expense.id, {
-                      amountPaise: Math.max(0, toPaise(Number(event.target.value) || 0)),
-                    })
-                  }
-                  placeholder="₹"
-                  className={field}
-                  aria-label="Amount in rupees"
-                />
-                <select
-                  value={expense.payer}
-                  onChange={(event) =>
-                    update(expense.id, { payer: event.target.value })
-                  }
-                  className={field}
-                  aria-label="Paid by"
-                >
-                  {people.map((person) => (
-                    <option key={person} value={person}>
-                      {person} paid
-                    </option>
-                  ))}
-                </select>
-                <select
-                  value={expense.category}
-                  onChange={(event) =>
-                    update(expense.id, {
-                      category: event.target.value as Category,
-                    })
-                  }
-                  className={field}
-                  aria-label="Category"
-                >
-                  {CATEGORIES.map((category) => (
-                    <option key={category} value={category}>
-                      {category}
-                    </option>
-                  ))}
-                </select>
-                <Button
-                  variant="ghost"
-                  onClick={() =>
-                    onChange(expenses.filter((item) => item.id !== expense.id))
-                  }
-                  aria-label="Delete expense"
-                >
-                  Delete
-                </Button>
-              </div>
+              </button>
 
-              <div className="mt-2 flex flex-wrap items-center gap-1.5">
-                <span className="text-xs text-muted-foreground">Split:</span>
-                <button
-                  type="button"
-                  onClick={() => update(expense.id, { splitAmong: [...people] })}
-                  className="rounded-full border px-2 py-0.5 text-xs hover:bg-muted"
-                >
-                  Everyone
-                </button>
-                {people.map((person) => {
-                  const on = expense.splitAmong.includes(person);
-                  return (
-                    <button
-                      key={person}
-                      type="button"
-                      onClick={() => toggleSplit(expense, person)}
-                      aria-pressed={on}
-                      className={`rounded-full px-2 py-0.5 text-xs transition-colors ${
-                        on
-                          ? "bg-foreground text-background"
-                          : "bg-muted text-muted-foreground"
-                      }`}
+              {open && (
+                <div className="space-y-4 px-5 pt-1 pb-5">
+                  <div className="grid gap-3 sm:grid-cols-2">
+                    <label className="space-y-1 text-xs font-medium text-muted-foreground">
+                      What was it?
+                      <input
+                        value={expense.description}
+                        onChange={(event) =>
+                          update(expense.id, { description: event.target.value })
+                        }
+                        placeholder="e.g. Dinner at Britto's"
+                        className={field}
+                      />
+                    </label>
+                    <label className="space-y-1 text-xs font-medium text-muted-foreground">
+                      Amount (₹)
+                      <input
+                        type="number"
+                        min={0}
+                        inputMode="decimal"
+                        value={expense.amountPaise ? expense.amountPaise / 100 : ""}
+                        onChange={(event) =>
+                          update(expense.id, {
+                            amountPaise: Math.max(
+                              0,
+                              toPaise(Number(event.target.value) || 0),
+                            ),
+                          })
+                        }
+                        placeholder="0"
+                        className={`${field} tabular-nums`}
+                      />
+                    </label>
+                    <label className="space-y-1 text-xs font-medium text-muted-foreground">
+                      Paid by
+                      <select
+                        value={expense.payer}
+                        onChange={(event) =>
+                          update(expense.id, { payer: event.target.value })
+                        }
+                        className={field}
+                      >
+                        {people.map((person) => (
+                          <option key={person} value={person}>
+                            {person}
+                          </option>
+                        ))}
+                      </select>
+                    </label>
+                    <label className="space-y-1 text-xs font-medium text-muted-foreground">
+                      Category
+                      <select
+                        value={expense.category}
+                        onChange={(event) =>
+                          update(expense.id, {
+                            category: event.target.value as Category,
+                          })
+                        }
+                        className={field}
+                      >
+                        {CATEGORIES.map((category) => (
+                          <option key={category} value={category}>
+                            {CATEGORY_STYLE[category].label}
+                          </option>
+                        ))}
+                      </select>
+                    </label>
+                  </div>
+
+                  <div>
+                    <div className="flex items-center justify-between">
+                      <p className="text-xs font-medium text-muted-foreground">
+                        Split equally between
+                      </p>
+                      <button
+                        type="button"
+                        onClick={() => update(expense.id, { splitAmong: [...people] })}
+                        className="text-xs font-medium text-primary hover:underline"
+                      >
+                        Everyone
+                      </button>
+                    </div>
+                    <div className="mt-2 flex flex-wrap gap-2">
+                      {people.map((person) => {
+                        const on = expense.splitAmong.includes(person);
+                        return (
+                          <button
+                            key={person}
+                            type="button"
+                            onClick={() => toggleSplit(expense, person)}
+                            aria-pressed={on}
+                            className={`flex items-center gap-1.5 rounded-full border py-1 pr-3 pl-1 text-sm transition-colors ${
+                              on
+                                ? "border-primary bg-primary/10 text-foreground"
+                                : "border-border text-muted-foreground opacity-60 hover:opacity-100"
+                            }`}
+                          >
+                            <Avatar name={person} size="sm" />
+                            {person}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+
+                  {sources.length > 0 && (
+                    <div>
+                      <p className="text-xs font-medium text-muted-foreground">
+                        From the chat
+                      </p>
+                      <ul className="mt-2 space-y-1.5">
+                        {sources.map((message) => (
+                          <li
+                            key={message.id}
+                            className="w-fit max-w-full rounded-2xl rounded-tl-sm bg-background px-3 py-2 text-sm shadow-xs ring-1 ring-border"
+                          >
+                            <span className="block text-xs font-semibold text-primary">
+                              {message.sender}
+                            </span>
+                            {message.text}
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+
+                  <div className="flex items-center justify-between gap-2">
+                    <Button
+                      variant="ghost"
+                      className="text-destructive hover:bg-destructive/10 hover:text-destructive"
+                      onClick={() => {
+                        onChange(expenses.filter((item) => item.id !== expense.id));
+                        setOpenId(null);
+                      }}
                     >
-                      {person}
-                    </button>
-                  );
-                })}
-              </div>
-
-              <div className="mt-2 flex flex-wrap items-center gap-3 text-xs">
-                {expense.confidence === "low" && (
-                  <span className="text-amber-700 dark:text-amber-400">
-                    AI wasn&apos;t sure about this one
-                  </span>
-                )}
-                {invalid && (
-                  <span className="text-destructive">
-                    Needs an amount and at least one person to split with
-                  </span>
-                )}
-                {sources.length > 0 && (
-                  <button
-                    type="button"
-                    onClick={() =>
-                      setOpenSource(openSource === expense.id ? null : expense.id)
-                    }
-                    className="text-muted-foreground underline-offset-2 hover:underline"
-                  >
-                    {openSource === expense.id ? "Hide" : "Show"} message
-                  </button>
-                )}
-              </div>
-
-              {openSource === expense.id && (
-                <ul className="mt-2 space-y-1 rounded-md bg-muted p-2 text-xs">
-                  {sources.map((message) => (
-                    <li key={message.id}>
-                      <span className="font-medium">{message.sender}:</span>{" "}
-                      {message.text}
-                    </li>
-                  ))}
-                </ul>
+                      <Trash2 />
+                      Delete
+                    </Button>
+                    <Button onClick={() => setOpenId(null)}>Done</Button>
+                  </div>
+                </div>
               )}
             </li>
           );
         })}
       </ul>
-
-      <Button variant="outline" className="mt-3" onClick={addExpense}>
-        + Add expense
-      </Button>
     </div>
   );
 }

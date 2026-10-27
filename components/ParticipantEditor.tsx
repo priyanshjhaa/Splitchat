@@ -1,6 +1,8 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { Plus, X } from "lucide-react";
+import { Avatar } from "@/components/Avatar";
 import { Button } from "@/components/ui/button";
 
 type Props = {
@@ -41,19 +43,20 @@ export function ParticipantEditor({
   }
 
   return (
-    <div className="mt-4">
-      <p className="text-sm font-medium">People</p>
-      <p className="text-xs text-muted-foreground">
-        Tap a name to rename it. Renaming someone to an existing name merges
-        them (e.g. a phone number into &quot;Rahul&quot;).
+    <div className="rounded-2xl border bg-card p-5 shadow-sm">
+      <h2 className="text-lg font-semibold">People on this trip</h2>
+      <p className="text-sm text-muted-foreground">
+        Tap a name to rename. Rename to an existing name to merge them (e.g. a
+        phone number into &quot;Rahul&quot;).
       </p>
 
-      <ul className="mt-3 flex flex-wrap gap-2">
+      <ul className="mt-4 flex flex-wrap gap-2">
         {people.map((person) => (
           <li
             key={person}
-            className="flex items-center gap-1 rounded-full bg-muted py-1 pr-1 pl-3 text-sm"
+            className="flex items-center gap-1.5 rounded-full border bg-background py-1 pr-1 pl-1 text-sm"
           >
+            <Avatar name={person} size="sm" />
             {editing === person ? (
               <input
                 ref={renameRef}
@@ -65,7 +68,7 @@ export function ParticipantEditor({
                   if (event.key === "Enter") commitRename();
                   if (event.key === "Escape") setEditing(null);
                 }}
-                className="w-32 bg-transparent outline-none"
+                className="w-32 bg-transparent font-medium outline-none"
                 aria-label={`Rename ${person}`}
               />
             ) : (
@@ -75,7 +78,7 @@ export function ParticipantEditor({
                   setEditing(person);
                   setDraft(person);
                 }}
-                className="hover:underline"
+                className="font-medium hover:text-primary"
               >
                 {person}
               </button>
@@ -89,10 +92,10 @@ export function ParticipantEditor({
                   ? `Remove ${person}`
                   : `${person} paid for something; change those rows first`
               }
-              className="flex size-6 items-center justify-center rounded-full text-muted-foreground hover:bg-background hover:text-foreground disabled:opacity-30"
+              className="flex size-6 items-center justify-center rounded-full text-muted-foreground hover:bg-muted hover:text-foreground disabled:opacity-30"
               aria-label={`Remove ${person}`}
             >
-              ×
+              <X className="size-3.5" />
             </button>
           </li>
         ))}
@@ -104,7 +107,7 @@ export function ParticipantEditor({
         ))}
       </datalist>
 
-      <div className="mt-3 flex gap-2">
+      <div className="mt-4 flex gap-2">
         <input
           value={newName}
           onChange={(event) => setNewName(event.target.value)}
@@ -112,9 +115,10 @@ export function ParticipantEditor({
             if (event.key === "Enter") commitAdd();
           }}
           placeholder="Add someone who never texted"
-          className="h-8 flex-1 rounded-lg border bg-background px-3 text-sm outline-none focus:ring-2 focus:ring-ring/50"
+          className="h-9 min-w-0 flex-1 rounded-lg border bg-background px-3 text-sm outline-none focus:border-primary focus:ring-3 focus:ring-primary/20"
         />
-        <Button variant="outline" onClick={commitAdd} disabled={!newName.trim()}>
+        <Button variant="outline" className="h-9" onClick={commitAdd} disabled={!newName.trim()}>
+          <Plus />
           Add
         </Button>
       </div>
