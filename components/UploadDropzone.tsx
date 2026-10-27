@@ -3,6 +3,7 @@
 import { useRef, useState, type DragEvent } from "react";
 import JSZip from "jszip";
 import { ExpenseTable } from "@/components/ExpenseTable";
+import { HeroDemo } from "@/components/HeroDemo";
 import { ParticipantEditor } from "@/components/ParticipantEditor";
 import { SettleUpCard } from "@/components/SettleUpCard";
 import { FileText, Sparkles, Upload } from "lucide-react";
@@ -248,83 +249,122 @@ export function UploadDropzone() {
 
   if (!parsed) {
     return (
-      <section className="mx-auto max-w-2xl pt-4 text-center sm:pt-10">
-        <span className="inline-flex items-center gap-1.5 rounded-full border bg-card px-3 py-1 text-xs text-muted-foreground">
-          <Sparkles className="size-3.5 text-primary" />
-          Open source · runs on open models
-        </span>
-        <h1 className="mt-5 text-4xl font-semibold tracking-tight text-balance sm:text-6xl">
-          Who owes whom?
-          <br />
-          <span className="text-primary">Ask the group chat.</span>
-        </h1>
-        <p className="mx-auto mt-4 max-w-lg text-base leading-7 text-muted-foreground sm:text-lg">
-          Drop in your WhatsApp trip chat. SplitChat finds every expense, lets
-          you fix anything, and tells everyone exactly who pays whom.
-        </p>
-
-        <div
-          onDragOver={(event) => {
-            event.preventDefault();
-            setDragging(true);
-          }}
-          onDragLeave={() => setDragging(false)}
-          onDrop={handleDrop}
-          className={`mt-10 rounded-2xl border-2 border-dashed bg-card p-8 shadow-sm transition-colors sm:p-10 ${
-            dragging ? "border-primary bg-primary/5" : "border-border"
-          }`}
-        >
-          <span className="mx-auto flex size-12 items-center justify-center rounded-full bg-primary/10 text-primary">
-            <Upload className="size-5" />
+      <section className="grid items-center gap-12 pt-2 lg:grid-cols-[1.1fr_0.9fr] lg:pt-10">
+        <div className="text-center lg:text-left">
+          <span className="fade-up glass inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs text-muted-foreground">
+            <Sparkles className="size-3.5 text-primary" />
+            Open source · runs on open models · nothing stored
           </span>
-          <p className="mt-4 font-medium">Drop your WhatsApp export here</p>
-          <p className="mt-1 text-sm text-muted-foreground">
-            .txt from Android, or .zip from iPhone
+          <h1
+            style={{ "--i": 1 } as React.CSSProperties}
+            className="fade-up mt-6 text-5xl leading-[1.02] font-semibold tracking-tight text-balance sm:text-7xl"
+          >
+            Who owes whom?
+            <br />
+            <span className="text-shine font-display font-normal italic">
+              Ask the group chat.
+            </span>
+          </h1>
+          <p
+            style={{ "--i": 2 } as React.CSSProperties}
+            className="fade-up mx-auto mt-5 max-w-lg text-base leading-7 text-muted-foreground sm:text-lg lg:mx-0"
+          >
+            Drop in your WhatsApp trip chat. SplitChat finds every expense, even
+            the Hinglish ones, lets you fix anything, and tells everyone exactly
+            who pays whom.
           </p>
-          {fileInput}
-          <div className="mt-6 flex flex-wrap justify-center gap-2">
-            <Button
-              size="lg"
-              onClick={() => inputRef.current?.click()}
-              disabled={loading}
+
+          <div
+            style={{ "--i": 3 } as React.CSSProperties}
+            className="fade-up ring-glow mt-9 rounded-3xl"
+          >
+            <div
+              onDragOver={(event) => {
+                event.preventDefault();
+                setDragging(true);
+              }}
+              onDragLeave={() => setDragging(false)}
+              onDrop={handleDrop}
+              className={`rounded-3xl bg-card/90 p-6 backdrop-blur-xl transition-all sm:p-8 ${
+                dragging ? "scale-[1.01] bg-emerald-50" : ""
+              }`}
             >
-              {loading ? "Reading…" : "Choose file"}
-            </Button>
-            <Button variant="outline" size="lg" onClick={loadSample} disabled={loading}>
-              Try sample chat
-            </Button>
+              <div className="flex flex-col items-center gap-4 sm:flex-row sm:text-left">
+                <span className="flex size-12 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-emerald-400 to-teal-700 text-white shadow-lg shadow-emerald-700/30">
+                  <Upload className="size-5" />
+                </span>
+                <div className="flex-1 text-center sm:text-left">
+                  <p className="font-medium">Drop your WhatsApp export here</p>
+                  <p className="text-sm text-muted-foreground">
+                    .txt from Android, or .zip from iPhone
+                  </p>
+                </div>
+              </div>
+              {fileInput}
+              <div className="mt-6 grid gap-2 sm:grid-cols-2">
+                <Button
+                  size="lg"
+                  className="btn-glow h-11 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-600 text-white hover:opacity-95"
+                  onClick={() => inputRef.current?.click()}
+                  disabled={loading}
+                >
+                  {loading ? "Reading…" : "Choose file"}
+                </Button>
+                <Button
+                  variant="outline"
+                  size="lg"
+                  className="h-11 rounded-xl bg-background/60"
+                  onClick={loadSample}
+                  disabled={loading}
+                >
+                  <Sparkles className="text-primary" />
+                  Try sample chat
+                </Button>
+              </div>
+              {error && (
+                <p role="alert" className="mt-4 text-sm text-destructive">
+                  {error}
+                </p>
+              )}
+            </div>
           </div>
-          {error && (
-            <p role="alert" className="mt-4 text-sm text-destructive">
-              {error}
-            </p>
-          )}
+
+          <details
+            style={{ "--i": 4 } as React.CSSProperties}
+            className="fade-up mt-4 text-left text-sm text-muted-foreground"
+          >
+            <summary className="cursor-pointer text-center hover:text-foreground lg:text-left">
+              How do I export a WhatsApp chat?
+            </summary>
+            <ol className="mt-3 list-decimal space-y-1 pl-5">
+              <li>Open the group chat and tap the group name.</li>
+              <li>
+                Tap <b>Export chat</b> (Android: ⋮ → More → Export chat).
+              </li>
+              <li>
+                Choose <b>Without media</b> and save the file.
+              </li>
+            </ol>
+          </details>
         </div>
 
-        <details className="mx-auto mt-4 max-w-md text-left text-sm text-muted-foreground">
-          <summary className="cursor-pointer text-center hover:text-foreground">
-            How do I export a WhatsApp chat?
-          </summary>
-          <ol className="mt-3 list-decimal space-y-1 pl-5">
-            <li>Open the group chat and tap the group name.</li>
-            <li>
-              Tap <b>Export chat</b> (Android: ⋮ → More → Export chat).
-            </li>
-            <li>
-              Choose <b>Without media</b> and save the file.
-            </li>
-          </ol>
-        </details>
+        <div style={{ "--i": 3 } as React.CSSProperties} className="fade-up">
+          <HeroDemo />
+        </div>
 
-        <ol className="mt-12 grid gap-4 text-left sm:grid-cols-3">
+        <ol className="grid gap-4 text-left sm:grid-cols-3 lg:col-span-2">
           {[
-            ["1", "Drop the chat", "Parsed on your device. Nothing is stored."],
-            ["2", "Check the expenses", "AI finds them. You fix anything it missed."],
-            ["3", "Settle up", "Fewest payments, ready to paste in the group."],
-          ].map(([step, title, text]) => (
-            <li key={step} className="rounded-xl border bg-card p-4">
-              <span className="text-xs font-semibold text-primary">Step {step}</span>
-              <p className="mt-1 font-medium">{title}</p>
+            ["01", "Drop the chat", "Parsed right on your device. Nothing is stored."],
+            ["02", "Check the expenses", "AI finds them. You fix anything it missed."],
+            ["03", "Settle up", "Fewest payments, ready to paste in the group."],
+          ].map(([step, title, text], index) => (
+            <li
+              key={step}
+              style={{ "--i": index + 5 } as React.CSSProperties}
+              className="fade-up glass group rounded-2xl p-5 transition-transform hover:-translate-y-1"
+            >
+              <span className="font-display text-3xl text-primary italic">{step}</span>
+              <p className="mt-2 font-medium">{title}</p>
               <p className="mt-1 text-sm text-muted-foreground">{text}</p>
             </li>
           ))}
@@ -335,8 +375,8 @@ export function UploadDropzone() {
 
   return (
     <section>
-      <div className="flex flex-wrap items-center gap-3 rounded-2xl border bg-card p-4 shadow-sm">
-        <span className="flex size-10 items-center justify-center rounded-xl bg-primary/10 text-primary">
+      <div className="glass fade-up flex flex-wrap items-center gap-3 rounded-3xl p-4">
+        <span className="flex size-11 items-center justify-center rounded-2xl bg-gradient-to-br from-emerald-400 to-teal-700 text-white shadow-lg shadow-emerald-700/30">
           <FileText className="size-5" />
         </span>
         <div className="min-w-0 flex-1">
@@ -348,12 +388,16 @@ export function UploadDropzone() {
         </div>
         {fileInput}
         {!sampleLoaded && (
-          <Button onClick={findExpenses} disabled={extracting}>
+          <Button
+            onClick={findExpenses}
+            disabled={extracting}
+            className="btn-glow rounded-xl bg-gradient-to-r from-emerald-500 to-teal-600 text-white"
+          >
             <Sparkles />
             {extracting ? progress ?? "Reading chat…" : expenses ? "Find again" : "Find expenses"}
           </Button>
         )}
-        <Button variant="outline" onClick={startOver} disabled={extracting}>
+        <Button variant="outline" className="rounded-xl bg-background/60" onClick={startOver} disabled={extracting}>
           New chat
         </Button>
       </div>
@@ -389,15 +433,31 @@ export function UploadDropzone() {
               onChange={setExpenses}
             />
           ) : (
-            <div className="rounded-2xl border border-dashed bg-card p-8 text-center">
-              <p className="font-medium">
-                {extracting ? progress ?? "Reading chat…" : "Ready when you are"}
-              </p>
-              <p className="mt-1 text-sm text-muted-foreground">
-                {extracting
-                  ? "The AI is reading the messages that mention money."
-                  : "Fix any names above, then press Find expenses."}
-              </p>
+            <div className="glass fade-up overflow-hidden rounded-3xl">
+              <div className="px-5 py-5">
+                <p className="font-medium">
+                  {extracting ? progress ?? "Reading chat…" : "Ready when you are"}
+                </p>
+                <p className="mt-1 text-sm text-muted-foreground">
+                  {extracting
+                    ? "An open model is reading every message that mentions money."
+                    : "Fix any names above, then press Find expenses."}
+                </p>
+              </div>
+              {extracting && (
+                <ul className="space-y-3 border-t border-black/5 px-5 py-4">
+                  {[0, 1, 2, 3].map((row) => (
+                    <li key={row} className="flex items-center gap-3">
+                      <span className="shimmer size-10 rounded-xl" />
+                      <span className="flex-1 space-y-2">
+                        <span className="shimmer block h-3 w-2/3 rounded-full" />
+                        <span className="shimmer block h-2.5 w-1/3 rounded-full" />
+                      </span>
+                      <span className="shimmer h-4 w-14 rounded-full" />
+                    </li>
+                  ))}
+                </ul>
+              )}
             </div>
           )}
         </div>

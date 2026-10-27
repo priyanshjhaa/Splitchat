@@ -43,7 +43,7 @@ export function ParticipantEditor({
   }
 
   return (
-    <div className="rounded-2xl border bg-card p-5 shadow-sm">
+    <div className="glass fade-up rounded-3xl p-5">
       <h2 className="text-lg font-semibold">People on this trip</h2>
       <p className="text-sm text-muted-foreground">
         Tap a name to rename. Rename to an existing name to merge them (e.g. a
@@ -54,7 +54,7 @@ export function ParticipantEditor({
         {people.map((person) => (
           <li
             key={person}
-            className="flex items-center gap-1.5 rounded-full border bg-background py-1 pr-1 pl-1 text-sm"
+            className="flex items-center gap-1.5 rounded-full bg-background/80 py-1 pr-1 pl-1 text-sm ring-1 ring-border transition-all hover:-translate-y-0.5 hover:shadow-md"
           >
             <Avatar name={person} size="sm" />
             {editing === person ? (
@@ -117,7 +117,7 @@ export function ParticipantEditor({
           placeholder="Add someone who never texted"
           className="h-9 min-w-0 flex-1 rounded-lg border bg-background px-3 text-sm outline-none focus:border-primary focus:ring-3 focus:ring-primary/20"
         />
-        <Button variant="outline" className="h-9" onClick={commitAdd} disabled={!newName.trim()}>
+        <Button variant="outline" className="h-9 rounded-lg bg-background/60" onClick={commitAdd} disabled={!newName.trim()}>
           <Plus />
           Add
         </Button>

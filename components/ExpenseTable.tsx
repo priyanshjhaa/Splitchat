@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { ChevronDown, Plus, Trash2 } from "lucide-react";
+import { ChevronDown, Plus, Sparkles, Trash2 } from "lucide-react";
 import { Avatar } from "@/components/Avatar";
 import { CATEGORY_STYLE, CategoryTile } from "@/components/category";
 import { Button } from "@/components/ui/button";
@@ -70,8 +70,8 @@ export function ExpenseTable({ expenses, people, messages, onChange }: Props) {
   const unsure = expenses.filter((expense) => expense.confidence === "low").length;
 
   return (
-    <div className="rounded-2xl border bg-card shadow-sm">
-      <div className="flex flex-wrap items-center justify-between gap-3 border-b px-5 py-4">
+    <div className="glass fade-up overflow-hidden rounded-3xl">
+      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-black/5 px-5 py-4">
         <div>
           <h2 className="text-lg font-semibold">Expenses</h2>
           <p className="text-sm text-muted-foreground">
@@ -84,7 +84,7 @@ export function ExpenseTable({ expenses, people, messages, onChange }: Props) {
             )}
           </p>
         </div>
-        <Button variant="outline" onClick={addExpense}>
+        <Button variant="outline" className="rounded-xl bg-background/60" onClick={addExpense}>
           <Plus />
           Add expense
         </Button>
@@ -95,13 +95,13 @@ export function ExpenseTable({ expenses, people, messages, onChange }: Props) {
           No expenses found. Add them manually.
         </p>
       ) : (
-        <p className="border-b bg-muted/50 px-5 py-2 text-xs text-muted-foreground">
-          The AI found these. Tap any row to fix it.
+        <p className="flex items-center gap-1.5 border-b border-black/5 bg-gradient-to-r from-emerald-50/80 to-transparent px-5 py-2 text-xs text-emerald-900/80 dark:from-emerald-950/40 dark:text-emerald-200">
+          <Sparkles className="size-3.5" /> The AI found these. Tap any row to fix it.
         </p>
       )}
 
-      <ul className="divide-y">
-        {expenses.map((expense) => {
+      <ul className="divide-y divide-black/5">
+        {expenses.map((expense, index) => {
           const open = openId === expense.id;
           const invalid =
             expense.amountPaise <= 0 || expense.splitAmong.length === 0;
@@ -110,14 +110,20 @@ export function ExpenseTable({ expenses, people, messages, onChange }: Props) {
           );
 
           return (
-            <li key={expense.id} className={open ? "bg-muted/40" : ""}>
+            <li
+              key={expense.id}
+              style={{ "--i": Math.min(index, 12) } as React.CSSProperties}
+              className={`fade-up transition-colors ${open ? "bg-white/50 dark:bg-white/5" : ""}`}
+            >
               <button
                 type="button"
                 onClick={() => setOpenId(open ? null : expense.id)}
                 aria-expanded={open}
-                className="flex w-full items-center gap-3 px-5 py-3.5 text-left transition-colors hover:bg-muted/60"
+                className="group flex w-full items-center gap-3 px-5 py-3.5 text-left transition-colors hover:bg-white/60 dark:hover:bg-white/5"
               >
-                <CategoryTile category={expense.category} />
+                <span className="transition-transform group-hover:scale-110 group-hover:-rotate-3">
+                  <CategoryTile category={expense.category} />
+                </span>
                 <span className="min-w-0 flex-1">
                   <span className="flex items-center gap-2">
                     <span className="truncate font-medium">
@@ -286,7 +292,12 @@ export function ExpenseTable({ expenses, people, messages, onChange }: Props) {
                       <Trash2 />
                       Delete
                     </Button>
-                    <Button onClick={() => setOpenId(null)}>Done</Button>
+                    <Button
+                      className="rounded-xl bg-gradient-to-r from-emerald-500 to-teal-600 text-white"
+                      onClick={() => setOpenId(null)}
+                    >
+                      Done
+                    </Button>
                   </div>
                 </div>
               )}
